@@ -1,0 +1,13 @@
+---
+# vars file for Redhat
+
+keystone_packages:
+  - openstack-keystone
+  - python-keystoneclient
+  - httpd
+  - mod_wsgi
+  - python-memcached
+#keystone_system_service_name: openstack-keystone
+keystone_system_service_name: httpd
+keystone_config_location: /etc/keystone/keystone.conf
+keystone_wsgi_config_location: /etc/httpd/conf.d/wsgi-keystone.conf

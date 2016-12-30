@@ -1,0 +1,7 @@
+---
+# tasks file for keystone DB Setup
+
+- name: DB sync for keystone.
+  shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+  ignore_errors: True
+  run_once: True

@@ -1,0 +1,8 @@
+---
+# tasks file for openstack-keystone configure
+
+- name: Configure keystone.
+  shell: |
+    openstack-config --set "{{ keystone_config_location }}" "{{ item.section }}" "{{ item.param }}" "{{ item.value }}"
+  with_items:
+    - "{{ keystone_config }}"

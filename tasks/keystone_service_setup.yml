@@ -1,0 +1,54 @@
+---
+# tasks file for openstack-keystone service setup
+
+- name: Wait for keystone service to come up.
+  wait_for:
+    host: "{{ openstack_controller_host }}"
+    port: 35357
+    delay: 10
+    timeout: 30
+
+- name: Create the service entity for keystone.
+  shell: |
+    openstack service create --name "{{ keystone_service_name }}" --description "{{ keystone_service_description }}" "{{ keystone_service_type }}"
+  environment:
+    - "{{ token_auth_env }}"
+
+# Create the API endpoint for keystone.
+- name: "Check if API endpoint exists for service {{ keystone_service_type }}"
+  shell: "openstack endpoint list --service {{ keystone_service_type }}"
+  register: check_endpoint_result
+  environment:
+    - "{{ token_auth_env }}"
+  ignore_errors: True
+
+- name: "Specify API endpoints for {{ keystone_service_type }} service"
+  when: check_endpoint_result.rc == 0
+  shell: |
+    openstack endpoint create --region {{ keystone_service_region }} {{ keystone_service_type }} public {{ keystone_service_public_url }}
+    openstack endpoint create --region {{ keystone_service_region }} {{ keystone_service_type }} internal {{ keystone_service_internal_url }}
+    openstack endpoint create --region {{ keystone_service_region }} {{ keystone_service_type }} admin {{ keystone_service_admin_url }}
+  environment:
+    - "{{ token_auth_env }}"
+
+# Create projects, users, and roles
+- name: "Create the admin project, user, role"
+  shell: |
+    openstack project create --domain default --description "Admin Project" admin
+    openstack user create --domain default --password "{{ openstack_admin_password }}" "{{ openstack_admin_user }}"
+    openstack role create admin
+    openstack role add --project admin --user {{ openstack_admin_user }} admin
+  environment:
+    - "{{ token_auth_env }}"
+
+- name: "Create the service project"
+  shell: |
+    openstack project create --domain default --description "Service Project" service
+  environment:
+    - "{{ token_auth_env }}"
+
+- name: "Create the user role"
+  shell: |
+    openstack role create user
+  environment:
+    - "{{ token_auth_env }}"

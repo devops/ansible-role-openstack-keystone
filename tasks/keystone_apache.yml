@@ -1,0 +1,18 @@
+---
+# tasks file for keystone apache configure
+
+- name: Configure httpd Listen Port.
+  lineinfile: >
+    dest=/etc/httpd/conf/httpd.conf
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: "^#?Listen", line: "Listen {{ mgmt_ip }}:80" }
+
+- name: Copy the configuration file for keystone wsgi.
+  template:
+    src: wsgi-keystone.conf.j2
+    dest: "{{ keystone_wsgi_config_location }}"
+  notify:
+    - restart openstack-keystone

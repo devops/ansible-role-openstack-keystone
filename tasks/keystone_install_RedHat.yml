@@ -1,0 +1,8 @@
+---
+# tasks file for keystone install on RedHat
+
+- name: Install OpenStack keystone packages.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ keystone_packages }}"

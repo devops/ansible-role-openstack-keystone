@@ -1,0 +1,43 @@
+---
+# defaults file for ansible-role-openstack-keystone
+
+## openstack public config
+# openstack_keystone_admin_token: ""
+# openstack_db_host: ""
+# openstack_memcached_servers: ""
+# openstack_controller_host: ""
+
+# keystone service
+keystone_service_name: keystone
+keystone_service_region: RegionOne
+keystone_service_type: identity
+keystone_service_description: "OpenStack Identity"
+keystone_service_admin_url: "http://{{ openstack_admin_vip }}:35357/v2.0"
+keystone_service_internal_url: "http://{{ openstack_internal_vip }}:5000/v2.0"
+keystone_service_public_url: "http://{{ openstack_public_vip }}:5000/v2.0"
+
+# keystone db
+keystone_db_host: "{{ openstack_db_host }}"
+keystone_db_name: "keystone"
+keystone_db_user: "keystone"
+keystone_db_password: "keystone"
+keystone_db_priv: "{{ keystone_db_name }}.*:ALL"
+
+# keystone config
+keystone_token_provider: "uuid"
+keystone_token_driver: "memcache"
+keystone_revoke_driver: "sql"
+keystone_verbose: "True"
+keystone_public_bind_host: "{{ mgmt_ip }}"
+keystone_admin_bind_host: "{{ mgmt_ip }}"
+
+keystone_config:
+  - { section: "DEFAULT", param: "admin_token", value: "{{ openstack_keystone_admin_token }}" }
+  - { section: "database", param: "connection", value: "mysql://{{ keystone_db_user }}:{{ keystone_db_password }}@{{ keystone_db_host }}/{{ keystone_db_name }}" }
+  - { section: "memcache", param: "servers", value: "{{ openstack_memcached_servers }}" }
+  - { section: "token", param: "provider", value: "{{ keystone_token_provider }}" }
+  - { section: "token", param: "driver", value: "{{ keystone_token_driver }}" }
+  - { section: "revoke", param: "driver", value: "{{ keystone_revoke_driver }}" }
+  - { section: "DEFAULT", param: "verbose", value: "{{ keystone_verbose }}" }
+  - { section: "eventlet_server", param: "public_bind_host", value: "{{ keystone_public_bind_host }}" }
+  - { section: "eventlet_server", param: "admin_bind_host", value: "{{ keystone_admin_bind_host }}" }

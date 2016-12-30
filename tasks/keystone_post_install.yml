@@ -1,0 +1,8 @@
+---
+# tasks file for openstack-keystone post install
+
+- name: Ensure openstack-keystone services is started and enabled at boot.
+  service:
+    name: "{{ keystone_system_service_name }}"
+    state: started
+    enabled: yes

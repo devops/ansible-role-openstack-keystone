@@ -1,0 +1,23 @@
+---
+# tasks file for ansible-role-openstack-keystone
+
+# Variable setup.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Setup/Install tasks.
+- include: keystone_install_RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+# Configure tasks.
+- include: keystone_configure.yml
+
+# DB task
+- include: keystone_db_setup.yml
+
+- include: keystone_apache.yml
+
+- include: keystone_post_install.yml
+
+- include: keystone_service_setup.yml
+  run_once: True
