@@ -1,0 +1,9 @@
+---
+# Task file for fernet
+
+- name: Create fernet keys for Keystone.
+  command: >
+    keystone-manage fernet_setup
+                    --keystone-user "{{ keystone_system_user_name }}"
+                    --keystone-group "{{ keystone_system_group_name }}"
+  run_once: True
